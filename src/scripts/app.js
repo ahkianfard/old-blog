@@ -65,12 +65,13 @@ if (toTopButton) {
         });
     };
 }
-hamburger = document.getElementById('hamburger');
-menu = document.getElementById('navbar-solid-bg');
-navbar = document.getElementById("navbar")
+
+let hamburger = document.getElementById('hamburger');
+let menu = document.getElementById('navbar-solid-bg');
+let navbar = document.getElementById("navbar")
 
 document.addEventListener('click', function (event) {
-    isclickinside = navbar.contains(event.target)
+    let isclickinside = navbar.contains(event.target)
     if (!menu.classList.contains('hidden') && !isclickinside) {
         hamburger.click()
     }
