@@ -1,12 +1,20 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MainHero from "../components/MainHero.astro";
-const pageTitle = "Home Page";
+const pageTitle = "امیرحسین کیان فرد";
+const allPosts = await Astro.glob("../pages/posts/*.md");
 ---
 
 <BaseLayout pageTitle={pageTitle}>
 	<MainHero />
 	<main>
+		{
+			allPosts.map((post) => (
+				<li>
+					<a href={post.url}>{post.frontmatter.title}</a>
+				</li>
+			))
+		}
 		<!--featured-->
 		<div class="flex flex-col max-w-screen-xl mx-auto mb-8">
 			<h2
