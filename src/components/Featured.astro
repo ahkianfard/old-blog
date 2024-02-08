@@ -1,11 +1,12 @@
 ---
-const allPosts = await Astro.glob("../pages/posts/*.md");
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
 const featured = allPosts
-    .filter((el) => el.frontmatter.tags?.includes("برگزیده"))
+    .filter((el) => el.data.tags?.includes("برگزیده"))
     .sort(function (a, b) {
         return (
-            new Date(Date.parse(b.frontmatter.pubDate)).getTime() -
-            new Date(Date.parse(a.frontmatter.pubDate)).getTime()
+            new Date(Date.parse(b.data.pubDate)).getTime() -
+            new Date(Date.parse(a.data.pubDate)).getTime()
         );
     })
     .slice(0, 4);
@@ -23,20 +24,20 @@ const featured = allPosts
     >
         {
             featured.map((post) => (
-                <a href={post.url} class="transition-all group">
+                <a href={`/posts/${post.slug}/`} class="transition-all group">
                     <div class="relative flex flex-col justify-end px-8 pt-40 pb-8 overflow-hidden transition-all w-72 rounded-2xl hover:rounded-3xl">
                         <img
-                            src={post.frontmatter.image.url}
+                            src={post.data.image.url}
                             loading="lazy"
                             class="absolute inset-0 object-cover w-full h-full"
                         />
                         <div class="absolute inset-0 group-hover:via-gray-900/20 bg-gradient-to-t from-gray-900 via-gray-900/50" />
 
                         <h3 class="z-10 mt-3 text-2xl font-bold text-white">
-                            {post.frontmatter.title}
+                            {post.data.title}
                         </h3>
                         <div class="z-10 overflow-hidden text-sm leading-6 text-gray-300 gap-y-1">
-                            {post.frontmatter.description.slice(0, 60) + "..."}
+                            {post.data.description.slice(0, 60) + "..."}
                         </div>
                     </div>
                 </a>

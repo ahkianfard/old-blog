@@ -1,0 +1,145 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogTags from "../../components/BlogTags.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    function slug(titleStr) {
+        titleStr = titleStr.replace(/^\s+|\s+$/g, "");
+        titleStr = titleStr.toLowerCase();
+        //persian support
+        titleStr = titleStr
+            .replace(/[^a-z0-9_\s-ءاأإآؤئبتثجحخدذرزسشصضطظعغفقكلمنهويةى]#u/, "")
+            // Collapse whitespace and replace by -
+            .replace(/\s+/g, "-")
+            // Collapse dashes
+            .replace(/-+/g, "-");
+        return titleStr;
+    }
+    const allPosts = await getCollection("posts");
+    const uniqueTags = [
+        ...new Set(allPosts.map((post) => post.data.tags).flat()),
+    ];
+    return uniqueTags
+        .map((tag) => {
+            const filteredPosts = allPosts.filter((post) =>
+                post.data.tags.includes(tag),
+            );
+            tag = slug(tag);
+            return {
+                params: { tag },
+                props: { posts: filteredPosts },
+            };
+        })
+        .filter((el) => el.params.tag !== "بلاگ");
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+const sortedPosts = posts
+    .filter((el) => el.data.tags?.includes("بلاگ"))
+    .sort(function (a, b) {
+        return (
+            new Date(Date.parse(b.data.pubDate)).getTime() -
+            new Date(Date.parse(a.data.pubDate)).getTime()
+        );
+    });
+---
+
+<BaseLayout pageTitle={tag.replaceAll("-", " ")}>
+    <div class="flex flex-col max-w-screen-xl mx-4 lg:mx-auto">
+        <h2
+            class="p-4 my-8 text-xl font-extrabold leading-none text-center text-orange-600 bg-white rounded-lg shadow dark:bg-gray-800 md:text-2xl font-vazir dark:text-orange-500"
+        >
+            #️⃣ {tag.replaceAll("-", " ")}
+        </h2>
+        <div class="flex flex-row-reverse gap-8 my-8 max-sm:flex-col-reverse">
+            <!--blog posts-->
+            <div class="flex flex-col w-full gap-8 basis-3/4 font-iransans">
+                {
+                    sortedPosts.map((post) => (
+                        <a
+                            href={`/posts/${post.slug}/`}
+                            class="flex flex-col items-center max-w-full bg-white border border-gray-200 rounded-lg shadow md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                            <img
+                                class="w-full rounded-t-lg min-w-max md:w-4/6 md:rounded-none md:rounded-s-lg"
+                                src={post.data.image.url}
+                                loading="lazy"
+                            />
+                            <div class="flex flex-col justify-between p-4 leading-normal">
+                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    {post.data.title}
+                                </h5>
+                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    {post.data.description}
+                                </p>
+                            </div>
+                        </a>
+                    ))
+                }
+            </div>
+            <!--blog tags-->
+            <BlogTags />
+        </div>
+    </div>
+    <!--pagination-->
+    <div
+        class="flex flex-row justify-end max-w-screen-xl mx-4 lg:mx-auto font-iransans"
+    >
+        <nav aria-label="Page navigation example">
+            <ul class="inline-flex h-10 -space-x-px text-base">
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 ms-0 border-e-0 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >قبلی</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >1</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >2</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        aria-current="page"
+                        class="flex items-center justify-center h-10 px-4 text-orange-600 border border-gray-300 bg-orange-50 hover:bg-orange-100 hover:text-orange-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                        >3</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >4</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >5</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="#"
+                        class="flex items-center justify-center h-10 px-4 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        >بعدی</a
+                    >
+                </li>
+            </ul>
+        </nav>
+    </div>
+</BaseLayout>

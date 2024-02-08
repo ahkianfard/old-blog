@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
+const { tags, slug } = Astro.props;
+
+const filterdPost = allPosts.filter((object) => {
+    // Check if any of the object's tags are included in the filterTags array
+    let removeBlogTag = object.data.tags.filter((el) => el !== "بلاگ");
+    return (
+        removeBlogTag.some((tag) => tags.includes(tag)) && object.slug !== slug
+    );
+});
+---
+
+<aside
+    aria-label="Related articles"
+    class="p-8 m-4 my-4 bg-white rounded-lg shadow dark:bg-gray-800"
+>
+    <div class="max-w-screen-xl p-4 m-4 mx-auto">
+        <h2
+            class="py-2 mb-8 text-2xl font-bold text-orange-600 bg-white dark:bg-gray-800 font-vazir dark:text-orange-500"
+        >
+            مطالب مرتبط
+        </h2>
+        <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+            {
+                filterdPost.map((post) => (
+                    <>
+                        <article class="flex flex-col items-center text-center align-middle">
+                            <a href={`/posts/${post.slug}/`}>
+                                <img
+                                    src={post.data.image.url}
+                                    class="rounded-lg size-full"
+                                />
+                            </a>
+                            <h2 class="mt-6 mb-2 text-xl font-bold text-gray-900 dark:text-white">
+                                <a href={`/posts/${post.slug}/`}>
+                                    {post.data.title}
+                                </a>
+                            </h2>
+                            <p class="mb-4 text-gray-500 dark:text-gray-400">
+                                {post.data.description}
+                            </p>
+                        </article>
+                    </>
+                ))
+            }
+        </div>
+    </div>
+</aside>
